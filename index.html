@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="A-One Online Bookstore & Stationery Shop. Hand-picked literature, premium stationery, fast deliveries, and best-value pricing.">
+  <title>A-One | Books & Stationery</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: {
+              purple: '#3b1c6e',
+              'purple-dark': '#2d1357',
+              coral: '#f68e7a',
+              'coral-hover': '#e97c67',
+              softbg: '#fcfbfe'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    
+    .dot-pattern {
+      background-image: radial-gradient(rgba(255,255,255,0.25) 1.5px, transparent 1.5px);
+      background-size: 16px 16px;
+    }
+    
+    .flying-item {
+      position: fixed;
+      z-index: 99999;
+      pointer-events: none;
+      border-radius: 10px;
+      box-shadow: 0 16px 32px rgba(59,28,110,0.4), 0 4px 12px rgba(246,142,122,0.4);
+      border: 2px solid #ffffff;
+      will-change: transform, opacity;
+    }
+    
+    .sparkle-particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 99998;
+      will-change: transform, opacity;
+      animation: sparkleDecay var(--duration, 600ms) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    
+    @keyframes sparkleDecay {
+      0% { opacity: var(--start-opacity, 1); transform: translate3d(0, 0, 0) scale(var(--start-scale, 1)) rotate(0deg); }
+      100% { opacity: 0; transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px)) scale(0) rotate(var(--spin-deg, 180deg)); }
+    }
+    
+    @keyframes cartBounce {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.35) rotate(-10deg); }
+      70% { transform: scale(0.92) rotate(4deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    
+    @keyframes badgePop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.6); background-color: #3b1c6e; }
+      100% { transform: scale(1); }
+    }
+    
+    .cart-bump { animation: cartBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .badge-pop { animation: badgePop 0.45s ease-out; }
+    
+    *:focus-visible {
+      outline: none;
+      ring-width: 2px;
+      ring-color: #3b1c6e;
+      ring-offset-width: 2px;
+    }
+  </style>
+</head>
+
+<body class="bg-[#fcfbfe] text-slate-800 font-sans antialiased selection:bg-brand-coral selection:text-white">
+  
+  <header class="relative z-30 bg-white/80 backdrop-blur-md border-b border-purple-50 sticky top-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 rounded-xl bg-brand-purple flex items-center justify-center shadow-md" aria-hidden="true">
+            <svg class="w-7 h-7" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L8 32H18L20 26V6Z" fill="white"/>
+              <path d="M20 6V26L22 32H32L20 6Z" fill="#f68e7a"/>
+              <path d="M28 2L29.2 7.8L35 9L29.2 10.2L28 16L26.8 10.2L21 9L26.8 7.8L28 2Z" fill="white"/>
+            </svg>
+          </div>
+          <span class="text-2xl font-black tracking-tight text-brand-purple">A-One</span>
+        </div>
+        
+        <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
+          <a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded-lg px-2 py-1" href="#shop">Shop</a>
+          <a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded-lg px-2 py-1" href="#authors">Authors</a>
+          <a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded-lg px-2 py-1" href="#categories">Categories</a>
+          <a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded-lg px-2 py-1" href="#contact">Contact</a>
+        </nav>
+        
+        <div class="flex items-center gap-3">
+          <button 
+            type="button"
+            class="relative p-2.5 rounded-full hover:bg-purple-50 text-slate-700 hover:text-brand-purple transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-purple" 
+            id="header-cart-btn" 
+            onclick="toggleCartDrawer()" 
+            aria-label="View shopping cart" 
+            aria-expanded="false" 
+            aria-controls="cart-drawer-container"
+          >
+            <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+            <span class="absolute -top-0.5 -right-0.5 bg-brand-coral text-white font-extrabold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-md pointer-events-none" id="header-cart-badge" aria-live="polite">2</span>
+          </button>
+          
+          <button class="hidden sm:inline-block px-4 py-2 rounded-full text-xs font-bold bg-brand-purple text-white hover:bg-brand-purple-dark transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-purple">Sign In</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="relative overflow-hidden pt-8 pb-16 lg:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-semibold text-brand-purple">
+            <span>Explore Books & Stationery</span> 📚
+          </div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+            Get Your New <br>
+            <span class="relative inline-block">
+              <span class="relative z-10">Book</span>
+              <span class="absolute bottom-1.5 left-0 w-full h-3.5 bg-brand-coral/30 -rotate-1 rounded-sm" aria-hidden="true"></span>
+            </span>
+            With The <br>
+            <span class="text-brand-purple">Best Price</span>
+          </h1>
+          
+          <div class="pt-2 max-w-xl">
+            <form class="flex items-center bg-white p-2 rounded-full border border-purple-100 shadow-xl shadow-purple-900/5" role="search" onsubmit="event.preventDefault();">
+              <div class="pl-4 pr-2 text-slate-400" aria-hidden="true">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-width="2"></path></svg>
+              </div>
+              <label for="hero-search" class="sr-only">Search books and stationery</label>
+              <input id="hero-search" class="w-full py-2.5 px-2 text-sm text-slate-700 placeholder-slate-400 border-none focus:outline-none focus:ring-0 bg-transparent" placeholder="Search books, authors, stationery..." type="search">
+              <button class="bg-brand-coral hover:bg-brand-coral-hover text-white text-sm font-bold px-6 py-3 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-coral" type="submit">Search</button>
+            </form>
+          </div>
+          
+          <div class="pt-4 flex items-center gap-4 flex-wrap">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider w-full">Popular Picks (Click to fly into cart):</p>
+            
+            <div class="flex items-center gap-3 p-2 pr-4 bg-white rounded-2xl border border-purple-50 shadow-sm cursor-pointer hover:shadow-md transition-shadow group/hero-pick focus-visible:ring-2 focus-visible:ring-brand-purple" onclick="addItemWithFly('the-alchemist', event)" role="button" tabindex="0" aria-label="Add The Alchemist to cart">
+              <div class="relative overflow-hidden rounded-lg">
+                <img class="w-10 h-14 object-cover rounded-lg group-hover/hero-pick:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7RkvxSYo4dBbzd7YnewEM-m0TMPhsk5a6cVHer9tko5anROlIpNe9uQg9WcAUcZE7gIaJ6gQhpzpcDMhsTR_gdt1Rk-U_kmrh4mP8mooFL9XcqY13PksxEamcJVSrILcWzCZwpSow04npoeAwlGgYKgNxnh-J473RX0aOck9Mh7aOJabtEcQ74LyLyde_PSThF7_DouGm-f-aGkrCOC0LMol9hRXfNEA2nII53wQv" alt="The Alchemist book cover" width="40" height="56" loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-brand-purple/20 opacity-0 group-hover/hero-pick:opacity-100 transition-opacity flex items-center justify-center">
+                  <span class="text-[9px] text-white font-bold bg-brand-coral/90 px-1 py-0.5 rounded shadow-sm">Fly ✨</span>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">The Alchemist</h4>
+                <p class="text-[11px] text-amber-500 font-semibold">★ 4.9 • #85.00</p>
+              </div>
+              <span class="ml-2 w-8 h-8 rounded-full bg-brand-coral/10 hover:bg-brand-coral text-brand-coral hover:text-white flex items-center justify-center font-bold text-sm transition-colors" aria-hidden="true">+</span>
+            </div>
+
+            <div class="flex items-center gap-3 p-2 pr-4 bg-white rounded-2xl border border-purple-50 shadow-sm cursor-pointer hover:shadow-md transition-shadow group/hero-pick2 focus-visible:ring-2 focus-visible:ring-brand-purple" onclick="addItemWithFly('notebook', event)" role="button" tabindex="0" aria-label="Add Premium Notebook to cart">
+              <div class="relative overflow-hidden rounded-lg">
+                <img class="w-10 h-14 object-cover rounded-lg group-hover/hero-pick2:scale-105 transition-transform" src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=80&q=80" alt="Premium Leather Notebook" width="40" height="56" loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-brand-purple/20 opacity-0 group-hover/hero-pick2:opacity-100 transition-opacity flex items-center justify-center">
+                  <span class="text-[9px] text-white font-bold bg-brand-coral/90 px-1 py-0.5 rounded shadow-sm">Fly ✨</span>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Leather Notebook</h4>
+                <p class="text-[11px] text-amber-500 font-semibold">★ 4.7 • #45.00</p>
+              </div>
+              <span class="ml-2 w-8 h-8 rounded-full bg-brand-coral/10 hover:bg-brand-coral text-brand-coral hover:text-white flex items-center justify-center font-bold text-sm transition-colors" aria-hidden="true">+</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 relative flex justify-center items-center">
+          <div class="relative w-full max-w-[420px] aspect-[4/5] bg-gradient-to-tr from-brand-purple to-[#5926a8] rounded-[48px] p-6 flex flex-col justify-end shadow-2xl overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/10 blur-xl" aria-hidden="true"></div>
+            <div class="relative z-10 mx-auto w-full flex justify-center">
+              <img alt="Student reading a book" class="w-full max-w-[340px] object-cover drop-shadow-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnCMh6ICtx2g6QkqpdiIb0qSojTvr2im-BkZO-e8h-xu1ogy7R8hbMGZ8kaDzvWdeZMCBzqFgOEshAYt5eP8u-cgfWO4bMHqyKGKfPgglSTJae_YX2z_BdRtZSz8m3mAMkffIBFQN07yAD_XNpiftSQyoaqCu4UvnwGOmuaR8bfC1DWtjHwLBio8yjxZxLssjFSSVwnO0bgrOmyywqgXFqp37Sudvm-uy67MgWEHhn" width="340" height="425" loading="eager" decoding="async">
+            </div>
+            <div class="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl flex items-center justify-between z-20">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-brand-coral/20 text-brand-coral flex items-center justify-center font-black text-xs" aria-hidden="true">%</div>
+                <div>
+                  <p class="text-[11px] font-bold text-slate-800">Super Discount Week</p>
+                  <p class="text-[10px] text-slate-500">Up to 45% OFF Bestsellers</p>
+                </div>
+              </div>
+              <button class="text-xs font-bold text-brand-purple bg-purple-50 px-2.5 py-1.5 rounded-full hover:bg-brand-purple hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-brand-purple" onclick="document.getElementById('shop').scrollIntoView({behavior: 'smooth'})">Grab Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20" id="shop">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-14">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Most Selling Items</h2>
+        <p class="mt-2 text-sm sm:text-base font-semibold text-slate-400">Click any cover or "+" button to watch it fly with a magical sparkle trail straight into your bag!</p>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 items-stretch">
+        <div class="bg-white rounded-3xl p-4 border border-purple-50 shadow-md flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300">
+          <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-slate-100 mb-4 cursor-pointer group/cover shadow-xs hover:shadow-lg transition-all" onclick="addItemWithFly('lighthouse', event)" role="button" tabindex="0" aria-label="Add Digital Odyssey to cart">
+            <img class="w-full h-full object-cover group-hover/cover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtE-UrCFrAJqsfBej6yYIZL_YQNjKAR5mxCDlvM9vcwZ4z3ZgAGz_KRuC7wyICQeUDptVVC5NEPUcrF7Lrjn6V1TDtvFz_0D5_FUotC6tjiZs2xO83etWgv88loESHyG88G2CfVtrWA8d-VFAiPZL-7tMJN09QLlq43OE0hkW9eTzRnD9O8FsDfGBjQLP3fYWrJJ_pVdmK3gYQvTjzYAtIqX4LbxgID_1CricagVz4" alt="Digital Odyssey book cover" width="300" height="400" loading="lazy" decoding="async">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/10 opacity-0 group-hover/cover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-3 text-white pointer-events-none">
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold bg-brand-coral px-2.5 py-1 rounded-full shadow-md animate-pulse">✨ Click to fly</span>
+            </div>
+            <span class="absolute top-2.5 right-2.5 bg-white/90 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-full pointer-events-none" aria-label="Rating 4.4 out of 5">⭐ 4.4</span>
+          </div>
+          <div class="text-center">
+            <span class="text-[11px] font-semibold text-slate-400">Virginia Woolf</span>
+            <h3 class="text-sm font-bold text-slate-800 mt-0.5">Digital Odyssey</h3>
+            <div class="mt-3 flex items-center justify-center gap-2">
+              <span class="bg-purple-50 text-brand-purple font-bold text-xs px-3 py-1 rounded-full">#95.00</span>
+              <button class="p-2 rounded-full bg-brand-coral/10 hover:bg-brand-coral text-brand-coral hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-brand-coral" onclick="addItemWithFly('lighthouse', event)" aria-label="Add Digital Odyssey to bag">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m8-8H4"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-4 border border-purple-50 shadow-md flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300">
+          <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-emerald-50 mb-4 cursor-pointer group/cover shadow-xs hover:shadow-lg transition-all" onclick="addItemWithFly('carbonel', event)" role="button" tabindex="0" aria-label="Add Carbonel to cart">
+            <img class="w-full h-full object-cover group-hover/cover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxFNfEE0Fxg8Vi9dRNkgV1NDEsWNb_fKHFPxM-Re-RBIgglRdZwHdrXqn1MuxMnR8qzd30AgELfU7R6juFdPDX_DOgcdAemiuPAP8zfCAKIu-n-BgQBva-cd4fU6YqRhYPLYZG5wPUPJUTlIPWZSh94VftV7cLSbeL_64zWEC6A4A-Ov8UkHM7FfX2OEIsbbD7MVC0Tz0mMWwV-QeSq55p-y8FujEnQuJHunxIIn64" alt="Carbonel King of Cats book cover" width="300" height="400" loading="lazy" decoding="async">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/10 opacity-0 group-hover/cover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-3 text-white pointer-events-none">
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold bg-brand-coral px-2.5 py-1 rounded-full shadow-md animate-pulse">✨ Click to fly</span>
+            </div>
+            <span class="absolute top-2.5 right-2.5 bg-white/90 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-full pointer-events-none" aria-label="Rating 4.6 out of 5">⭐ 4.6</span>
+          </div>
+          <div class="text-center">
+            <span class="text-[11px] font-semibold text-slate-400">Barbara Sleigh</span>
+            <h3 class="text-sm font-bold text-slate-800 mt-0.5">Carbonel: King of Cats</h3>
+            <div class="mt-3 flex items-center justify-center gap-2">
+              <span class="bg-purple-50 text-brand-purple font-bold text-xs px-3 py-1 rounded-full">#120.00</span>
+              <button class="p-2 rounded-full bg-brand-coral/10 hover:bg-brand-coral text-brand-coral hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-brand-coral" onclick="addItemWithFly('carbonel', event)" aria-label="Add Carbonel to bag">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m8-8H4"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-4 border-2 border-brand-purple/20 shadow-xl flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300 scale-105 z-10">
+          <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-amber-50 mb-4 cursor-pointer group/cover shadow-xs hover:shadow-lg transition-all" onclick="addItemWithFly('treason', event)" role="button" tabindex="0" aria-label="Add Cue for Treason to cart">
+            <img class="w-full h-full object-cover group-hover/cover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIipKGhWO9649wb-8k1nuXgbIHuPNmZG28nz3y9NNNveOg_RY3fI69XnQpWW45rRwH2n086yCspSylPFgQDFvl3h8_79OykMboh8o_icvv4ECcmHwo0jeAL4RVk3BKkVWhgcTmE4gIFr_PdJnG3y5CKp07KYVIbGTb1ONGZVmWTJwkzQpDdHPemR4OhykLtze3c3Fz5vghw3BMvGNMS9-WupHFuYZGRYIoskBgV3xn" alt="Cue for Treason book cover" width="300" height="400" loading="lazy" decoding="async">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/10 opacity-0 group-hover/cover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-3 text-white pointer-events-none">
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold bg-brand-coral px-2.5 py-1 rounded-full shadow-md animate-pulse">✨ Click to fly</span>
+            </div>
+            <span class="absolute top-2.5 right-2.5 bg-white/95 text-slate-800 text-[11px] font-bold px-2 py-1 rounded-full pointer-events-none" aria-label="Rating 4.8 out of 5">⭐ 4.8</span>
+          </div>
+          <div class="text-center">
+            <span class="text-[11px] font-semibold text-slate-400">Geoffrey Trease</span>
+            <h3 class="text-base font-extrabold text-slate-800 mt-0.5">Cue for Treason</h3>
+            <div class="mt-3 flex items-center justify-center gap-2">
+              <span class="bg-brand-purple text-white font-black text-sm px-4 py-1 rounded-full">#150.00</span>
+              <button class="p-2 rounded-full bg-brand-coral hover:bg-brand-coral-hover text-white transition-colors shadow-sm focus-visible:ring-2 focus-visible:ring-brand-coral" onclick="addItemWithFly('treason', event)" aria-label="Add Cue for Treason to bag">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m8-8H4"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-4 border border-purple-50 shadow-md flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300">
+          <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-rose-50 mb-4 cursor-pointer group/cover shadow-xs hover:shadow-lg transition-all" onclick="addItemWithFly('cinderella', event)" role="button" tabindex="0" aria-label="Add Chinese Cinderella to cart">
+            <img class="w-full h-full object-cover group-hover/cover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXMV21VzYSe6vZzsJMSC5s5HDJuDnJPi9iacC12wYRnvxyyiNakOuEvlUhs4vv-wNQw3MMEm-RULV8xAcob0AQMxgtkzP6Q6_SSlpWpq4v8QhL8I4DjTP1RvXfGQdzWY4MWq99ZMD3Y9-R1xerHveMlkca_4CE-OTdl1oZD-ZfrfMG9g9U9iLqGXSLS-_nlZA_IsRWc_-C9I2SeBzBufYR3YwLxGUBOBx21Mi9DPmK" alt="Chinese Cinderella book cover" width="300" height="400" loading="lazy" decoding="async">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/10 opacity-0 group-hover/cover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-3 text-white pointer-events-none">
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold bg-brand-coral px-2.5 py-1 rounded-full shadow-md animate-pulse">✨ Click to fly</span>
+            </div>
+            <span class="absolute top-2.5 right-2.5 bg-white/90 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-full pointer-events-none" aria-label="Rating 4.5 out of 5">⭐ 4.5</span>
+          </div>
+          <div class="text-center">
+            <span class="text-[11px] font-semibold text-slate-400">Adeline Yen Mah</span>
+            <h3 class="text-sm font-bold text-slate-800 mt-0.5">Chinese Cinderella</h3>
+            <div class="mt-3 flex items-center justify-center gap-2">
+              <span class="bg-purple-50 text-brand-purple font-bold text-xs px-3 py-1 rounded-full">#110.00</span>
+              <button class="p-2 rounded-full bg-brand-coral/10 hover:bg-brand-coral text-brand-coral hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-brand-coral" onclick="addItemWithFly('cinderella', event)" aria-label="Add Chinese Cinderella to bag">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m8-8H4"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-4 border border-purple-50 shadow-md flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300">
+          <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-cyan-50 mb-4 cursor-pointer group/cover shadow-xs hover:shadow-lg transition-all" onclick="addItemWithFly('notebook', event)" role="button" tabindex="0" aria-label="Add Premium Notebook to cart">
+            <img class="w-full h-full object-cover group-hover/cover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=300&q=80" alt="Premium Leather Notebook" width="300" height="400" loading="lazy" decoding="async">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/10 opacity-0 group-hover/cover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-3 text-white pointer-events-none">
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold bg-brand-coral px-2.5 py-1 rounded-full shadow-md animate-pulse">✨ Click to fly</span>
+            </div>
+            <span class="absolute top-2.5 right-2.5 bg-white/90 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-full pointer-events-none" aria-label="Rating 4.7 out of 5">⭐ 4.7</span>
+          </div>
+          <div class="text-center">
+            <span class="text-[11px] font-semibold text-slate-400">A-One Stationery</span>
+            <h3 class="text-sm font-bold text-slate-800 mt-0.5">Leather Notebook</h3>
+            <div class="mt-3 flex items-center justify-center gap-2">
+              <span class="bg-purple-50 text-brand-purple font-bold text-xs px-3 py-1 rounded-full">#45.00</span>
+              <button class="p-2 rounded-full bg-brand-coral/10 hover:bg-brand-coral text-brand-coral hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-brand-coral" onclick="addItemWithFly('notebook', event)" aria-label="Add Notebook to bag">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m8-8H4"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-gradient-to-b from-[#fcfbfe] to-purple-50/50" id="authors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-brand-purple rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-brand-coral/20 blur-3xl pointer-events-none" aria-hidden="true"></div>
+        <div class="relative z-10 max-w-2xl space-y-4">
+          <span class="inline-block px-3 py-1 rounded-full bg-white/10 text-brand-coral text-xs font-bold uppercase tracking-wider">A-ONE MOBILE</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Read & Create Anywhere</h2>
+          <p class="text-purple-200 text-sm sm:text-base leading-relaxed">
+            A-One has created custom jackets, premium stationery, and reading experiences designed for avid enthusiasts. Download the app today to discover daily discounts and sync your wishlist seamlessly.
+          </p>
+          <div class="flex items-center gap-4 pt-2">
+            <button class="px-6 py-3 rounded-full bg-brand-coral hover:bg-brand-coral-hover text-white font-bold text-xs sm:text-sm shadow-md transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-purple">Download App</button>
+            <button class="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-purple">Learn More</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-white border-t border-purple-50 py-12" id="contact">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="space-y-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-brand-purple flex items-center justify-center shadow-sm" aria-hidden="true">
+              <svg class="w-5 h-5" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 6L8 32H18L20 26V6Z" fill="white"/>
+                <path d="M20 6V26L22 32H32L20 6Z" fill="#f68e7a"/>
+                <path d="M28 2L29.2 7.8L35 9L29.2 10.2L28 16L26.8 10.2L21 9L26.8 7.8L28 2Z" fill="white"/>
+              </svg>
+            </div>
+            <span class="text-xl font-black tracking-tight text-brand-purple">A-One</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">A-One is an online bookstore & stationery shop providing hand-picked literature, fast deliveries, and best-value pricing.</p>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Explore</h4>
+          <ul class="space-y-2 text-xs text-slate-600">
+            <li><a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded px-1" href="#shop">Bestsellers</a></li>
+            <li><a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded px-1" href="#shop">New Releases</a></li>
+            <li><a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded px-1" href="#shop">Stationery</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Customer Support</h4>
+          <ul class="space-y-2 text-xs text-slate-600">
+            <li><a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded px-1" href="#">Help Center</a></li>
+            <li><a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded px-1" href="#">Shipping & Delivery</a></li>
+            <li><a class="hover:text-brand-purple transition-colors focus-visible:ring-2 rounded px-1" href="#">Returns & Refunds</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Stay Connected</h4>
+          <p class="text-xs text-slate-500 mb-2">Subscribe to our newsletter for exclusive discounts.</p>
+          <form class="flex items-center gap-2" onsubmit="event.preventDefault(); showToast('Subscribed!', 'Welcome to the A-One community.');">
+            <label for="footer-email" class="sr-only">Email address</label>
+            <input id="footer-email" class="w-full text-xs py-2 px-3 rounded-full border border-purple-100 bg-[#faf8fd] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple" placeholder="Your email..." type="email" required>
+            <button class="px-4 py-2 rounded-full bg-brand-purple text-white text-xs font-bold hover:bg-brand-purple-dark transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-purple" type="submit">Join</button>
+          </form>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-purple-50 text-center text-xs text-slate-400">
+        © <span id="year"></span> A-One - All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <div class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0" id="cart-drawer-container" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+    <div class="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]" id="cart-backdrop" onclick="toggleCartDrawer()" aria-hidden="true"></div>
+    <div class="absolute inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10 pointer-events-auto">
+      <div class="w-screen max-w-[430px] sm:max-w-[450px] bg-white shadow-2xl flex flex-col border-l border-purple-100" id="cart-panel">
+        <div class="px-6 py-4 border-b border-purple-50 bg-white sticky top-0 z-10">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-purple-50 text-brand-purple flex items-center justify-center font-bold" id="drawer-cart-icon-box" aria-hidden="true">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+              </div>
+              <div>
+                <h3 id="cart-title" class="text-base font-extrabold text-slate-900 leading-tight">Shopping Bag</h3>
+                <p class="text-xs text-slate-400">Interactive live bag</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-slate-400" onclick="toggleCartDrawer()" aria-label="Close cart drawer">✕</button>
+            </div>
+          </div>
+          <div class="pt-2 pb-1">
+            <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+              <span class="text-[11px] font-bold text-slate-800">🎉 #15 away from Free Shipping!</span>
+              <span class="text-brand-purple font-black text-[11px]">94%</span>
+            </div>
+            <div class="w-full bg-purple-100 rounded-full h-1.5 overflow-hidden" role="progressbar" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100" aria-label="Free shipping progress">
+              <div class="bg-gradient-to-r from-brand-purple to-brand-coral h-full rounded-full" style="width: 94%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4" id="cart-scroll-area">
+          <div class="space-y-3" id="cart-list" aria-live="polite"></div>
+          
+          <div class="hidden py-8 text-center space-y-4" id="cart-empty-view">
+            <div class="w-20 h-20 rounded-3xl bg-purple-50 text-brand-purple flex items-center justify-center mx-auto text-3xl" aria-hidden="true">🛒</div>
+            <div>
+              <h4 class="text-base font-extrabold text-slate-800">Your shopping bag is empty</h4>
+              <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">Add books or stationery from our recommended titles!</p>
+            </div>
+            <div class="pt-2">
+              <button class="px-4 py-2 rounded-full bg-purple-50 text-brand-purple text-xs font-bold hover:bg-purple-100 transition-colors focus-visible:ring-2 focus-visible:ring-brand-purple" onclick="toggleCartDrawer()">Start Shopping</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 border-t border-purple-50 bg-[#fdfcff] space-y-3 hidden" id="cart-footer">
+          <div class="space-y-1.5 text-xs text-slate-500">
+            <div class="flex justify-between"><span>Subtotal</span><span class="font-bold text-slate-800" id="cart-subtotal">#0.00</span></div>
+            <div class="flex justify-between"><span>Estimated Tax (5%)</span><span class="font-bold text-slate-800" id="cart-tax">#0.00</span></div>
+            <div class="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">
+              <span>Total</span><span class="text-brand-purple" id="cart-total">#0.00</span>
+            </div>
+          </div>
+          <button class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-coral to-[#f79986] text-white font-bold text-sm shadow-lg shadow-brand-coral/25 hover:opacity-95 transition-opacity flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-coral" id="checkout-btn" onclick="openCheckoutModal()">
+            <span>Proceed to Checkout</span>
+            <span>•</span>
+            <span id="checkout-btn-total">#0.00</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-6 overflow-y-auto" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity" onclick="closeCheckoutModal()" aria-hidden="true"></div>
+    <div class="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full border border-purple-100 overflow-hidden z-10 my-auto">
+      <div class="bg-white px-6 py-5 border-b border-purple-50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-50 text-brand-purple flex items-center justify-center font-bold text-lg" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          </div>
+          <div>
+            <h3 id="checkout-title" class="text-lg font-extrabold text-slate-900 leading-tight">Complete Your Order</h3>
+            <p class="text-xs text-slate-400">A-One Secure Checkout</p>
+          </div>
+        </div>
+        <button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors text-sm font-bold focus-visible:ring-2 focus-visible:ring-slate-400" onclick="closeCheckoutModal()" aria-label="Close checkout modal">✕</button>
+      </div>
+      
+      <div class="p-6 space-y-6 max-h-[82vh] overflow-y-auto">
+        <div class="bg-[#faf8fd] rounded-2xl p-4 border border-purple-50 space-y-2.5">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-900 pb-1 border-b border-purple-100/60">
+            <span>Order Summary</span>
+            <span class="text-[11px] font-semibold text-brand-purple">A-One Direct</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-600"><span>Subtotal</span><span class="font-bold text-slate-800" id="modal-summary-subtotal">#0.00</span></div>
+          <div class="flex justify-between text-xs text-slate-600"><span>Estimated Shipping</span><span class="font-bold text-emerald-600">Free (#0.00)</span></div>
+          <div class="flex justify-between text-xs text-slate-600"><span>Estimated Tax (5%)</span><span class="font-bold text-slate-800" id="modal-summary-tax">#0.00</span></div>
+          <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t border-purple-100/80">
+            <span>Total Due</span><span class="text-brand-purple font-extrabold text-base" id="modal-summary-total">#0.00</span>
+          </div>
+        </div>
+
+        <form class="space-y-6" id="checkout-form" onsubmit="handleCheckoutSubmit(event)">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"><span aria-hidden="true">📍</span> Delivery Information</h4>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="checkout-name">Full Name</label>
+                <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-[#faf8fd] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple" id="checkout-name" placeholder="Jane Doe" required type="text" autocomplete="name" value="Alex Morgan">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="checkout-email">Email Address</label>
+                <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-[#faf8fd] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple" id="checkout-email" placeholder="alex@example.com" required type="email" autocomplete="email" value="alex@example.com">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="checkout-address">Street Address</label>
+                <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-[#faf8fd] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple" id="checkout-address" placeholder="123 Bookstore Way" required type="text" autocomplete="street-address" value="742 Evergreen Terrace">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="checkout-city">City</label>
+                <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-[#faf8fd] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple" id="checkout-city" placeholder="City" required type="text" autocomplete="address-level2" value="Springfield">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="checkout-phone">Phone Number</label>
+                <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-[#faf8fd] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple" id="checkout-phone" placeholder="+1 (555) 000-0000" required type="tel" autocomplete="tel" value="+1 (555) 234-8910">
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-3 pt-1">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Choose Payment Method</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <button class="p-3 rounded-2xl border-2 border-brand-purple bg-purple-50/70 text-left transition-all relative flex flex-col justify-between group focus-visible:ring-2 focus-visible:ring-brand-purple" id="btn-tab-card" onclick="selectPaymentMethod('card')" type="button" aria-pressed="true">
+                <div class="flex items-center justify-between w-full mb-1">
+                  <span class="text-sm font-bold text-slate-900 flex items-center gap-1.5"><span aria-hidden="true">💳</span> Card</span>
+                  <div class="w-3.5 h-3.5 rounded-full border-2 border-brand-purple flex items-center justify-center p-0.5"><div class="w-full h-full rounded-full bg-brand-purple" id="radio-dot-card"></div></div>
+                </div>
+                <p class="text-[10px] text-slate-500">Visa, Mastercard</p>
+              </button>
+              
+              <button class="p-3 rounded-2xl border border-slate-200 bg-white hover:border-brand-purple/50 text-left transition-all relative flex flex-col justify-between group focus-visible:ring-2 focus-visible:ring-brand-purple" id="btn-tab-crypto" onclick="selectPaymentMethod('crypto')" type="button" aria-pressed="false">
+                <div class="flex items-center justify-between w-full mb-1">
+                  <span class="text-sm font-bold text-slate-900 flex items-center gap-1.5"><span aria-hidden="true">⚡</span> Crypto</span>
+                  <div class="w-3.5 h-3.5 rounded-full border border-slate-300 flex items-center justify-center p-0.5"><div class="w-full h-full rounded-full bg-transparent" id="radio-dot-crypto"></div></div>
+                </div>
+                <p class="text-[10px] text-slate-500">USDT, BTC, ETH</p>
+              </button>
+              
+              <button class="p-3 rounded-2xl border border-slate-200 bg-white hover:border-brand-purple/50 text-left transition-all relative flex flex-col justify-between group focus-visible:ring-2 focus-visible:ring-brand-purple" id="btn-tab-cod" onclick="selectPaymentMethod('cod')" type="button" aria-pressed="false">
+                <div class="flex items-center justify-between w-full mb-1">
+                  <span class="text-sm font-bold text-slate-900 flex items-center gap-1.5"><span aria-hidden="true">📦</span> Cash on Delivery</span>
+                  <div class="w-3.5 h-3.5 rounded-full border border-slate-300 flex items-center justify-center p-0.5"><div class="w-full h-full rounded-full bg-transparent" id="radio-dot-cod"></div></div>
+                </div>
+                <p class="text-[10px] text-slate-500">Pay at doorstep</p>
+              </button>
+            </div>
+
+            <div class="space-y-3.5 bg-[#faf8fd] p-4 rounded-2xl border border-purple-100" id="payment-panel-card">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="card-name">Cardholder Name</label>
+                <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple" id="card-name" placeholder="Name on card" type="text" value="Alex Morgan" required>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="card-number">Card Number</label>
+                <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple font-mono" id="card-number" maxlength="19" placeholder="0000 0000 0000 0000" type="text" value="4242 4242 4242 4242" required autocomplete="cc-number">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="card-expiry">Expiration</label>
+                  <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple font-mono" id="card-expiry" maxlength="5" placeholder="MM/YY" type="text" value="08/28" required autocomplete="cc-exp">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="card-cvv">CVV</label>
+                  <input class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple font-mono" id="card-cvv" maxlength="4" placeholder="CVC" type="text" value="888" required autocomplete="cc-csc">
+                </div>
+              </div>
+            </div>
+
+            <div class="hidden space-y-4 bg-[#faf8fd] p-4 rounded-2xl border border-purple-100" id="payment-panel-crypto">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1" for="crypto-coin-select">Choose Asset</label>
+                  <select class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple font-semibold text-slate-800" id="crypto-coin-select" onchange="updateCryptoCalculation()">
+                    <option value="USDT">USDT (Tether USD)</option>
+                    <option value="BTC">BTC (Bitcoin)</option>
+                    <option value="ETH">ETH (Ethereum)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1" for="crypto-network-select">Network</label>
+                  <select class="w-full text-xs py-2 px-3 rounded-xl border border-purple-100 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple font-semibold text-slate-800" id="crypto-network-select" onchange="updateCryptoCalculation()">
+                    <option value="TRC-20">TRC-20 (Lowest Gas)</option>
+                    <option value="ERC-20">ERC-20 (Ethereum)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="bg-white p-3.5 rounded-xl border border-purple-100 flex flex-col sm:flex-row items-center gap-4">
+                <div class="relative w-24 h-24 bg-slate-900 rounded-xl p-2 flex flex-col items-center justify-center shrink-0 border border-slate-200" aria-hidden="true">
+                  <svg class="w-16 h-16 text-white fill-current" viewBox="0 0 24 24"><path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 2h2v4h-2v-4zm-4-4h2v2h-2v-2zm2 0h2v2h-2v-2zm2 2h2v2h-2v-2zm-6 2h2v4h-2v-4zm4 0h2v2h-2v-2zm2 2h2v2h-2v-2zm-8-6h2v2h-2v-2zm2-2h2v2h-2v-2zm2 0h2v2h-2v-2z"></path></svg>
+                  <span class="text-[8px] font-extrabold text-brand-coral uppercase tracking-wider mt-1">A-ONE PAY</span>
+                </div>
+                <div class="flex-1 min-w-0 space-y-2 text-center sm:text-left w-full">
+                  <div>
+                    <div class="text-[11px] font-semibold text-slate-400">Total Crypto Equivalent:</div>
+                    <div class="text-base font-black text-brand-purple flex items-center justify-center sm:justify-start gap-1.5" id="crypto-amount-display">257.25 USDT</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] font-semibold text-slate-500 mb-1">Deposit Wallet Address:</div>
+                    <div class="flex items-center gap-1.5 bg-[#faf8fd] border border-purple-100 rounded-lg p-1.5">
+                      <code class="text-[11px] text-slate-700 truncate font-mono flex-1 select-all" id="crypto-address-text">TX8mKq9Y2v3wPLhG8qR29vXLa9B4f9Au1Q</code>
+                      <button class="px-2 py-1 bg-white hover:bg-brand-purple hover:text-white text-brand-purple font-bold text-[10px] rounded border border-purple-200 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-brand-purple" onclick="copyCryptoAddress()" type="button">Copy</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hidden space-y-3.5 bg-[#faf8fd] p-4 rounded-2xl border border-purple-100" id="payment-panel-cod">
+              <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                <div class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 font-bold" aria-hidden="true">✓</div>
+                <div>
+                  <p class="font-bold text-slate-800">Zero Upfront Online Payment</p>
+                  <p class="text-[11px] text-slate-500">Please prepare exact cash sum of <span class="font-bold text-brand-purple" id="cod-exact-amount">#0.00</span> at delivery.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 p-2 bg-purple-50/60 rounded-xl border border-purple-100">
+                <input class="rounded text-brand-purple focus:ring-brand-purple focus-visible:ring-2" id="cod-confirm-checkbox" type="checkbox" required>
+                <label class="text-[11px] font-semibold text-slate-700 cursor-pointer" for="cod-confirm-checkbox">I confirm someone will be present with exact cash.</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 space-y-2.5">
+            <button class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-coral to-[#f79986] text-white font-bold text-sm shadow-lg shadow-brand-coral/25 hover:opacity-95 transition-all flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-coral" id="modal-pay-btn" type="submit">
+              <span id="modal-pay-text">Pay #0.00 with Card</span>
+            </button>
+            <div class="flex items-center justify-between text-xs pt-1">
+              <button class="text-brand-purple hover:underline font-semibold flex items-center gap-1 text-[11px] focus-visible:ring-2 rounded px-1" onclick="closeCheckoutModal()" type="button">← Back to Cart</button>
+              <span class="text-[10px] text-slate-400 flex items-center gap-1 font-medium"><span class="text-emerald-500 font-bold" aria-hidden="true">✓</span> A-One Safe Checkout</span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-6 overflow-y-auto" id="receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title">
+    <div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity" onclick="closeReceiptModal()" aria-hidden="true"></div>
+    <div class="relative bg-white rounded-3xl shadow-2xl max-w-xl w-full border border-purple-100 overflow-hidden z-10 my-auto">
+      <div class="bg-gradient-to-r from-brand-purple to-[#5926a8] p-6 text-white text-center relative overflow-hidden">
+        <button class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-colors focus-visible:ring-2 focus-visible:ring-white" onclick="closeReceiptModal()" aria-label="Close receipt" title="Close receipt">✕</button>
+        <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-lg border-2 border-emerald-100" aria-hidden="true">
+          <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs text-xs font-bold text-amber-300 mb-2">
+          <span aria-hidden="true">🎉</span> Payment Verified & Confirmed
+        </div>
+        <h2 id="receipt-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Order Confirmed!</h2>
+        <p class="text-xs sm:text-sm text-purple-200 mt-1">Thank you for shopping with A-One! A digital receipt was emailed to you.</p>
+      </div>
+      
+      <div class="p-6 space-y-5 max-h-[75vh] overflow-y-auto text-left">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3.5 bg-[#faf8fd] rounded-2xl border border-purple-50 text-xs">
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Order ID</p>
+            <p class="font-black text-brand-purple mt-0.5" id="receipt-order-id">#AO-98421</p>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Est. Delivery</p>
+            <p class="font-bold text-slate-800 mt-0.5">Nov 10, 2026</p>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Payment</p>
+            <p class="font-bold text-emerald-600 mt-0.5 flex items-center gap-1" id="receipt-payment-method"><span aria-hidden="true">💳</span> Credit Card</p>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Status</p>
+            <p class="font-bold text-brand-purple mt-0.5">Processing</p>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-purple-50/60 rounded-xl border border-purple-100 text-xs">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base" aria-hidden="true">📍</span>
+            <div>
+              <p class="font-bold text-slate-800">Delivery Destination</p>
+              <p class="text-[11px] text-slate-500" id="receipt-address-text">Alex Morgan • 742 Evergreen Terrace, Springfield</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-bold text-brand-purple bg-white px-2 py-0.5 rounded-full border border-purple-100">Express Hub</span>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2.5">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Purchased Items</h4>
+            <span class="text-[11px] text-slate-400">A-One Official Store</span>
+          </div>
+          <div class="space-y-2" id="receipt-items-list" aria-live="polite"></div>
+        </div>
+
+        <div class="bg-[#faf8fd] rounded-2xl p-3.5 border border-purple-50 space-y-1.5 text-xs text-slate-600">
+          <div class="flex justify-between"><span>Subtotal</span><span class="font-bold text-slate-800" id="receipt-subtotal">#0.00</span></div>
+          <div class="flex justify-between"><span>Delivery / Shipping</span><span class="font-bold text-emerald-600">Free (#0.00)</span></div>
+          <div class="flex justify-between"><span>Estimated Tax (5%)</span><span class="font-bold text-slate-800" id="receipt-tax">#0.00</span></div>
+          <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t border-purple-100/80">
+            <span>Total Paid</span><span class="text-brand-purple font-black text-base" id="receipt-total">#0.00</span>
+          </div>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <button class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-coral to-[#f79986] text-white font-bold text-xs sm:text-sm shadow-lg shadow-brand-coral/25 hover:opacity-95 transition-opacity flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-coral" onclick="continueShoppingFromReceipt()" type="button">
+            <span>Continue Shopping</span><span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none" id="toast" role="status" aria-live="polite" aria-atomic="true">
+    <div class="bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700/50">
+      <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm" aria-hidden="true">✨</div>
+      <div>
+        <p class="text-xs font-bold" id="toast-title">Added to Cart!</p>
+        <p class="text-[11px] text-slate-400" id="toast-msg">Item animated with magical sparkles.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const BOOKS = {
+      'treason': { id: 'treason', title: 'Cue for Treason', author: 'Geoffrey Trease', price: 150.0, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCIipKGhWO9649wb-8k1nuXgbIHuPNmZG28nz3y9NNNveOg_RY3fI69XnQpWW45rRwH2n086yCspSylPFgQDFvl3h8_79OykMboh8o_icvv4ECcmHwo0jeAL4RVk3BKkVWhgcTmE4gIFr_PdJnG3y5CKp07KYVIbGTb1ONGZVmWTJwkzQpDdHPemR4OhykLtze3c3Fz5vghw3BMvGNMS9-WupHFuYZGRYIoskBgV3xn' },
+      'lighthouse': { id: 'lighthouse', title: 'Digital Odyssey', author: 'Virginia Woolf', price: 95.0, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtE-UrCFrAJqsfBej6yYIZL_YQNjKAR5mxCDlvM9vcwZ4z3ZgAGz_KRuC7wyICQeUDptVVC5NEPUcrF7Lrjn6V1TDtvFz_0D5_FUotC6tjiZs2xO83etWgv88loESHyG88G2CfVtrWA8d-VFAiPZL-7tMJN09QLlq43OE0hkW9eTzRnD9O8FsDfGBjQLP3fYWrJJ_pVdmK3gYQvTjzYAtIqX4LbxgID_1CricagVz4' },
+      'carbonel': { id: 'carbonel', title: 'Carbonel: King of Cats', author: 'Barbara Sleigh', price: 120.0, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxFNfEE0Fxg8Vi9dRNkgV1NDEsWNb_fKHFPxM-Re-RBIgglRdZwHdrXqn1MuxMnR8qzd30AgELfU7R6juFdPDX_DOgcdAemiuPAP8zfCAKIu-n-BgQBva-cd4fU6YqRhYPLYZG5wPUPJUTlIPWZSh94VftV7cLSbeL_64zWEC6A4A-Ov8UkHM7FfX2OEIsbbD7MVC0Tz0mMWwV-QeSq55p-y8FujEnQuJHunxIIn64' },
+      'cinderella': { id: 'cinderella', title: 'Chinese Cinderella', author: 'Adeline Yen Mah', price: 110.0, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDXMV21VzYSe6vZzsJMSC5s5HDJuDnJPi9iacC12wYRnvxyyiNakOuEvlUhs4vv-wNQw3MMEm-RULV8xAcob0AQMxgtkzP6Q6_SSlpWpq4v8QhL8I4DjTP1RvXfGQdzWY4MWq99ZMD3Y9-R1xerHveMlkca_4CE-OTdl1oZD-ZfrfMG9g9U9iLqGXSLS-_nlZA_IsRWc_-C9I2SeBzBufYR3YwLxGUBOBx21Mi9DPmK' },
+      'the-alchemist': { id: 'the-alchemist', title: 'The Alchemist', author: 'Paulo Coelho', price: 85.0, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD7RkvxSYo4dBbzd7YnewEM-m0TMPhsk5a6cVHer9tko5anROlIpNe9uQg9WcAUcZE7gIaJ6gQhpzpcDMhsTR_gdt1Rk-U_kmrh4mP8mooFL9XcqY13PksxEamcJVSrILcWzCZwpSow04npoeAwlGgYKgNxnh-J473RX0aOck9Mh7aOJabtEcQ74LyLyde_PSThF7_DouGm-f-aGkrCOC0LMol9hRXfNEA2nII53wQv' },
+      'notebook': { id: 'notebook', title: 'Premium Leather Notebook', author: 'A-One Stationery', price: 45.0, img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=200&q=80' }
+    };
+
+    let cart = [{ ...BOOKS['treason'], qty: 1 }, { ...BOOKS['lighthouse'], qty: 1 }];
+    let isDrawerOpen = false;
+    let selectedPaymentMethod = 'card';
+
+    const CRYPTO_DATA = {
+      'USDT': { rate: 1.0, unit: 'USDT', addresses: { 'TRC-20': 'TX8mKq9Y2v3wPLhG8qR29vXLa9B4f9Au1Q', 'ERC-20': '0x71C8A9b14285226D132D9D2f10bEb8f6834d284a' } },
+      'BTC': { rate: 0.000015, unit: 'BTC', addresses: { 'TRC-20': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 'ERC-20': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599' } },
+      'ETH': { rate: 0.00038, unit: 'ETH', addresses: { 'TRC-20': '0x8a92C1D24594191c49bA6a48d89e47f2122C3B4f', 'ERC-20': '0x8a92C1D24594191c49bA6a48d89e47f2122C3B4f' } }
+    };
+
+    const SPARKLE_SYMBOLS = ['✨', '★', '✦', '•', '⋆'];
+    const SPARKLE_COLORS = ['#f68e7a', '#8b5cf6', '#fbbf24', '#ffb4a2', '#c084fc', '#ffffff'];
+
+    function createSparkleParticle(x, y, isBurst = false, burstAngle = 0, burstDist = 0) {
+      const particle = document.createElement('div');
+      particle.className = 'sparkle-particle';
+      const isShape = Math.random() > 0.45;
+      const color = SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)];
+      const duration = isBurst ? Math.floor(550 + Math.random() * 250) : Math.floor(450 + Math.random() * 250);
+
+      if (isBurst) {
+        const driftX = Math.cos(burstAngle) * burstDist;
+        const driftY = Math.sin(burstAngle) * burstDist;
+        const spinDeg = (Math.random() - 0.5) * 540;
+        const scale = 0.9 + Math.random() * 0.7;
+        particle.style.setProperty('--duration', `${duration}ms`);
+        particle.style.setProperty('--drift-x', `${driftX}px`);
+        particle.style.setProperty('--drift-y', `${driftY}px`);
+        particle.style.setProperty('--spin-deg', `${spinDeg}deg`);
+        particle.style.setProperty('--start-scale', scale);
+        particle.style.setProperty('--start-opacity', '1');
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+      } else {
+        const spreadX = (Math.random() - 0.5) * 28;
+        const spreadY = (Math.random() - 0.5) * 28;
+        const driftX = (Math.random() - 0.5) * 36;
+        const driftY = 12 + Math.random() * 24;
+        const spinDeg = (Math.random() - 0.5) * 360;
+        const startScale = 0.8 + Math.random() * 0.6;
+        particle.style.setProperty('--duration', `${duration}ms`);
+        particle.style.setProperty('--drift-x', `${driftX}px`);
+        particle.style.setProperty('--drift-y', `${driftY}px`);
+        particle.style.setProperty('--spin-deg', `${spinDeg}deg`);
+        particle.style.setProperty('--start-scale', startScale);
+        particle.style.setProperty('--start-opacity', (0.85 + Math.random() * 0.15).toFixed(2));
+        particle.style.left = `${x + spreadX}px`;
+        particle.style.top = `${y + spreadY}px`;
+      }
+
+      if (isShape) {
+        const sym = SPARKLE_SYMBOLS[Math.floor(Math.random() * SPARKLE_SYMBOLS.length)];
+        particle.textContent = sym;
+        particle.style.color = color;
+        particle.style.fontSize = `${11 + Math.random() * 8}px`;
+        particle.style.textShadow = `0 0 8px ${color}, 0 0 16px rgba(246,142,122,0.8)`;
+      } else {
+        const size = 4 + Math.random() * 5;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.backgroundColor = color;
+        particle.style.borderRadius = '50%';
+        particle.style.boxShadow = `0 0 8px ${color}, 0 0 14px ${color}`;
+      }
+
+      document.body.appendChild(particle);
+      setTimeout(() => { if (particle.parentNode) particle.parentNode.removeChild(particle); }, duration + 50);
+    }
+
+    function spawnCartImpactBurst(targetX, targetY) {
+      const count = 12;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.4;
+        const distance = 35 + Math.random() * 65;
+        createSparkleParticle(targetX, targetY, true, angle, distance);
+      }
+    }
+
+    function flyToCart(sourceEventOrEl, imageUrl) {
+      let startX = window.innerWidth / 2;
+      let startY = window.innerHeight / 2;
+      let startW = 56;
+      let startH = 78;
+
+      if (sourceEventOrEl) {
+        const targetEl = sourceEventOrEl.currentTarget || sourceEventOrEl.target;
+        if (targetEl && targetEl.getBoundingClientRect) {
+          const rect = targetEl.getBoundingClientRect();
+          startX = rect.left + rect.width / 2;
+          startY = rect.top + rect.height / 2;
+          if (rect.width > 20) startW = Math.min(rect.width, 70);
+          if (rect.height > 20) startH = Math.min(rect.height, 95);
+        }
+      }
+
+      let target = isDrawerOpen ? document.getElementById('drawer-cart-icon-box') : document.getElementById('header-cart-btn');
+      if (!target) target = document.getElementById('header-cart-btn');
+      
+      const targetRect = target ? target.getBoundingClientRect() : { left: window.innerWidth - 60, top: 25, width: 40, height: 40 };
+      const endX = targetRect.left + targetRect.width / 2;
+      const endY = targetRect.top + targetRect.height / 2;
+
+      const flyer = document.createElement('img');
+      flyer.src = imageUrl || BOOKS['treason'].img;
+      flyer.className = 'flying-item';
+      flyer.style.width = startW + 'px';
+      flyer.style.height = startH + 'px';
+      flyer.style.left = (startX - startW / 2) + 'px';
+      flyer.style.top = (startY - startH / 2) + 'px';
+      document.body.appendChild(flyer);
+
+      const controlX = (startX + endX) / 2 + (startX < endX ? -50 : 50);
+      const controlY = Math.min(startY, endY) - Math.max(120, Math.abs(startX - endX) * 0.3);
+      const duration = 680;
+      const startTime = performance.now();
+      let lastParticleTime = 0;
+
+      function step(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+        const inv = 1 - ease;
+
+        const curX = (inv * inv * startX) + (2 * inv * ease * controlX) + (ease * ease * endX);
+        const curY = (inv * inv * startY) + (2 * inv * ease * controlY) + (ease * ease * endY);
+        const scale = 1 - (ease * 0.76);
+        const rotate = (ease * 360) * (startX < endX ? 1 : -1);
+        const opacity = ease > 0.88 ? (1 - ease) / 0.12 : 1;
+
+        flyer.style.transform = `translate3d(${curX - startX}px, ${curY - startY}px, 0) scale(${scale}) rotate(${rotate}deg)`;
+        flyer.style.opacity = opacity;
+
+        if (time - lastParticleTime > 30 && progress < 0.96) {
+          lastParticleTime = time;
+          const count = Math.random() > 0.5 ? 1 : 2;
+          for (let k = 0; k < count; k++) {
+            createSparkleParticle(curX, curY);
+          }
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          if (flyer.parentNode) flyer.parentNode.removeChild(flyer);
+          spawnCartImpactBurst(endX, endY);
+          triggerCartImpact();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function triggerCartImpact() {
+      const icon = document.getElementById('drawer-cart-icon-box');
+      const btn = document.getElementById('header-cart-btn');
+      const badge = document.getElementById('header-cart-badge');
+      if (icon) { icon.classList.remove('cart-bump'); void icon.offsetWidth; icon.classList.add('cart-bump'); }
+      if (btn) { btn.classList.remove('cart-bump'); void btn.offsetWidth; btn.classList.add('cart-bump'); }
+      if (badge) { badge.classList.remove('badge-pop'); void badge.offsetWidth; badge.classList.add('badge-pop'); }
+    }
+
+    function addItemWithFly(bookId, e) {
+      if (e) e.stopPropagation();
+      const book = BOOKS[bookId] || BOOKS['treason'];
+      flyToCart(e, book.img);
+
+      const existing = cart.find(i => i.id === bookId);
+      if (existing) existing.qty++;
+      else cart.push({ ...book, qty: 1 });
+
+      setTimeout(() => {
+        renderCart();
+        showToast('✨ Added with Sparkles!', `${book.title} flew into your shopping bag.`);
+      }, 420);
+    }
+
+    function getCartCalculations() {
+      let subtotal = 0;
+      cart.forEach(item => subtotal += item.price * item.qty);
+      const tax = subtotal * 0.05;
+      return { subtotal, tax, total: subtotal + tax };
+    }
+
+    function renderCart() {
+      const list = document.getElementById('cart-list');
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById('header-cart-badge').textContent = totalCount;
+
+      const emptyView = document.getElementById('cart-empty-view');
+      const footer = document.getElementById('cart-footer');
+
+      if (cart.length === 0) {
+        emptyView.classList.remove('hidden');
+        list.innerHTML = '';
+        footer.classList.add('hidden');
+        return;
+      }
+
+      emptyView.classList.add('hidden');
+      footer.classList.remove('hidden');
+      const { subtotal, tax, total } = getCartCalculations();
+
+      list.innerHTML = cart.map((item, idx) => `
+        <div class="flex items-center gap-3.5 p-3 rounded-2xl bg-[#faf8fd] border border-purple-50">
+          <img src="${item.img}" alt="${item.title}" class="w-12 h-16 object-cover rounded-xl shadow-xs" width="48" height="64" loading="lazy" decoding="async">
+          <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-bold text-slate-800 truncate">${item.title}</h4>
+            <p class="text-[10px] text-slate-400">${item.author}</p>
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-xs font-black text-brand-purple">#${(item.price * item.qty).toFixed(2)}</span>
+              <div class="flex items-center border border-slate-200 rounded-lg bg-white">
+                <button onclick="changeQty(${idx}, -1)" class="px-2 py-0.5 text-xs text-slate-500 hover:text-slate-800 font-bold focus-visible:ring-2 rounded" aria-label="Decrease quantity">-</button>
+                <span class="px-2 text-xs font-bold text-slate-800" aria-label="Quantity ${item.qty}">${item.qty}</span>
+                <button onclick="changeQty(${idx}, 1)" class="px-2 py-0.5 text-xs text-slate-500 hover:text-slate-800 font-bold focus-visible:ring-2 rounded" aria-label="Increase quantity">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('cart-subtotal').textContent = `#${subtotal.toFixed(2)}`;
+      document.getElementById('cart-tax').textContent = `#${tax.toFixed(2)}`;
+      document.getElementById('cart-total').textContent = `#${total.toFixed(2)}`;
+      document.getElementById('checkout-btn-total').textContent = `#${total.toFixed(2)}`;
+      updateModalTotals();
+    }
+
+    function updateModalTotals() {
+      const { subtotal, tax, total } = getCartCalculations();
+      const els = {
+        'modal-summary-subtotal': subtotal,
+        'modal-summary-tax': tax,
+        'modal-summary-total': total,
+        'cod-exact-amount': total
+      };
+      for (const [id, val] of Object.entries(els)) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = `#${val.toFixed(2)}`;
+      }
+      updatePayButtonLabel();
+      updateCryptoCalculation();
+    }
+
+    function changeQty(idx, delta) {
+      if (cart[idx]) {
+        cart[idx].qty += delta;
+        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+        renderCart();
+      }
+    }
+
+    function toggleCartDrawer() {
+      const container = document.getElementById('cart-drawer-container');
+      const btn = document.getElementById('header-cart-btn');
+      isDrawerOpen = !isDrawerOpen;
+      
+      if (isDrawerOpen) {
+        container.classList.remove('opacity-0', 'pointer-events-none');
+        container.classList.add('opacity-100', 'pointer-events-auto');
+        btn.setAttribute('aria-expanded', 'true');
+      } else {
+        container.classList.remove('opacity-100', 'pointer-events-auto');
+        container.classList.add('opacity-0', 'pointer-events-none');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function openCheckoutModal() {
+      if (cart.length === 0) {
+        showToast('Cart is empty', 'Add some items before proceeding to checkout.');
+        return;
+      }
+      if (isDrawerOpen) toggleCartDrawer();
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      updateModalTotals();
+    }
+
+    function closeCheckoutModal() {
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function selectPaymentMethod(method) {
+      selectedPaymentMethod = method;
+      const tabs = ['card', 'crypto', 'cod'];
+      
+      tabs.forEach(m => {
+        const tabBtn = document.getElementById(`btn-tab-${m}`);
+        const radioDot = document.getElementById(`radio-dot-${m}`);
+        const panel = document.getElementById(`payment-panel-${m}`);
+        
+        if (m === method) {
+          tabBtn.classList.add('border-2', 'border-brand-purple', 'bg-purple-50/70');
+          tabBtn.classList.remove('border-slate-200', 'bg-white');
+          tabBtn.setAttribute('aria-pressed', 'true');
+          radioDot.classList.add('bg-brand-purple');
+          radioDot.classList.remove('bg-transparent');
+          panel.classList.remove('hidden');
+        } else {
+          tabBtn.classList.remove('border-2', 'border-brand-purple', 'bg-purple-50/70');
+          tabBtn.classList.add('border', 'border-slate-200', 'bg-white');
+          tabBtn.setAttribute('aria-pressed', 'false');
+          radioDot.classList.remove('bg-brand-purple');
+          radioDot.classList.add('bg-transparent');
+          panel.classList.add('hidden');
+        }
+      });
+      updatePayButtonLabel();
+    }
+
+    function updatePayButtonLabel() {
+      const { total } = getCartCalculations();
+      const payText = document.getElementById('modal-pay-text');
+      if (!payText) return;
+      
+      if (selectedPaymentMethod === 'card') payText.textContent = `Pay #${total.toFixed(2)} with Card`;
+      else if (selectedPaymentMethod === 'crypto') {
+        const coin = document.getElementById('crypto-coin-select')?.value || 'USDT';
+        payText.textContent = `Verify & Pay #${total.toFixed(2)} via ${coin}`;
+      } else {
+        payText.textContent = `Place Cash on Delivery Order (#${total.toFixed(2)})`;
+      }
+    }
+
+    function updateCryptoCalculation() {
+      const { total } = getCartCalculations();
+      const coinSelect = document.getElementById('crypto-coin-select');
+      const netSelect = document.getElementById('crypto-network-select');
+      if (!coinSelect || !netSelect) return;
+
+      const coin = coinSelect.value;
+      const net = netSelect.value;
+      const data = CRYPTO_DATA[coin] || CRYPTO_DATA['USDT'];
+      const cryptoVal = total * data.rate;
+      const formattedVal = coin === 'USDT' ? cryptoVal.toFixed(2) : cryptoVal.toFixed(6);
+
+      const displayEl = document.getElementById('crypto-amount-display');
+      if (displayEl) displayEl.textContent = `${formattedVal} ${coin}`;
+
+      const resolvedAddr = data.addresses[net] || data.addresses['TRC-20'] || '0x71C8A9b14285226D132D9D2f10bEb8f6834d284a';
+      const addrEl = document.getElementById('crypto-address-text');
+      if (addrEl) addrEl.textContent = resolvedAddr;
+      
+      updatePayButtonLabel();
+    }
+
+    function copyCryptoAddress() {
+      const addrEl = document.getElementById('crypto-address-text');
+      if (!addrEl) return;
+      navigator.clipboard.writeText(addrEl.textContent).then(() => {
+        showToast('Copied Address', 'Deposit wallet address copied to clipboard.');
+      }).catch(() => showToast('Wallet Address', addrEl.textContent));
+    }
+
+    function handleCheckoutSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('modal-pay-btn');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="inline-block animate-spin mr-2" aria-hidden="true">⏳</span> Processing A-One Order...`;
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+        closeCheckoutModal();
+        
+        let confirmationMsg = selectedPaymentMethod === 'card' ? 'Card charged successfully!' : 
+                              selectedPaymentMethod === 'crypto' ? 'Crypto deposit registered!' : 
+                              'Order placed! Cash will be collected upon arrival.';
+        showToast('🎉 Order Placed!', confirmationMsg);
+        
+        cart = [];
+        renderCart();
+        openReceiptModal();
+      }, 1400);
+    }
+
+    function openReceiptModal() {
+      const modal = document.getElementById('receipt-modal');
+      if (!modal) return;
+
+      const methodMap = { 'card': '💳 Credit Card', 'crypto': '⚡ Crypto', 'cod': '📦 Cash on Delivery' };
+      const pMethodEl = document.getElementById('receipt-payment-method');
+      if (pMethodEl) pMethodEl.innerHTML = methodMap[selectedPaymentMethod] || '💳 Credit Card';
+
+      const name = document.getElementById('checkout-name')?.value || 'Alex Morgan';
+      const addr = document.getElementById('checkout-address')?.value || '742 Evergreen Terrace';
+      const city = document.getElementById('checkout-city')?.value || 'Springfield';
+      const addrEl = document.getElementById('receipt-address-text');
+      if (addrEl) addrEl.textContent = `${name} • ${addr}, ${city}`;
+
+      const itemsList = document.getElementById('receipt-items-list');
+      const { subtotal, tax, total } = getCartCalculations();
+      
+      if (itemsList && cart.length > 0) {
+        itemsList.innerHTML = cart.map(item => `
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#faf8fd] border border-purple-50">
+            <div class="flex items-center gap-3">
+              <img class="w-10 h-14 object-cover rounded-lg shadow-xs" src="${item.img}" alt="${item.title}" width="40" height="56" loading="lazy" decoding="async">
+              <div>
+                <h5 class="text-xs font-bold text-slate-800">${item.title}</h5>
+                <p class="text-[10px] text-slate-400">${item.author} • Qty: ${item.qty}</p>
+              </div>
+            </div>
+            <span class="text-xs font-black text-brand-purple">#${(item.price * item.qty).toFixed(2)}</span>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('receipt-subtotal').textContent = `#${subtotal.toFixed(2)}`;
+      document.getElementById('receipt-tax').textContent = `#${tax.toFixed(2)}`;
+      document.getElementById('receipt-total').textContent = `#${total.toFixed(2)}`;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeReceiptModal() {
+      const modal = document.getElementById('receipt-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function continueShoppingFromReceipt() {
+      closeReceiptModal();
+      const shopEl = document.getElementById('shop');
+      if (shopEl) shopEl.scrollIntoView({ behavior: 'smooth' });
+      showToast('Happy Reading!', 'Explore more bestsellers and stationery on A-One!');
+    }
+
+    function showToast(title, msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3200);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeCheckoutModal();
+        closeReceiptModal();
+        if (isDrawerOpen) toggleCartDrawer();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCart();
+      selectPaymentMethod('card');
+    });
+  </script>
+</body>
+</html>
