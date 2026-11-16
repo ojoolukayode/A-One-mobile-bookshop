@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - A-One</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <h2>A-One Admin</h2>
+            <nav>
+                <button class="nav-btn active">📦 Manage Inventory</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="logout-btn">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <h1>Add New Inventory</h1>
+                <p>Upload goods and images to your website</p>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Upload Form -->
+                <div class="card">
+                    <h3>Upload Product</h3>
+                    <form id="productForm">
+                        <div class="form-group">
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" placeholder="e.g., Scandal Fragrance" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productPrice">Price</label>
+                            <input type="text" id="productPrice" placeholder="e.g., $50.00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productImage">Product Image</label>
+                            <input type="file" id="productImage" accept="image/*" required>
+                            <div id="imagePreview" class="image-preview" style="display: none;"></div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Add to Inventory</button>
+                    </form>
+                </div>
+
+                <!-- Current Inventory -->
+                <div class="card">
+                    <h3>Current Inventory (<span id="inventoryCount">0</span>)</h3>
+                    <div id="inventoryList" class="inventory-list">
+                        <p class="empty-message">No items added yet.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
