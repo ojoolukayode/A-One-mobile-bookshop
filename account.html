@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - A-One Books</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="account-container">
+        <aside class="account-sidebar">
+            <div class="account-logo">
+                <h2>A-One Books</h2>
+            </div>
+            <nav class="account-nav">
+                <button class="account-nav-btn active">👤 My Account</button>
+                <button class="account-nav-btn">📚 Browse Books</button>
+                <button class="account-nav-btn">🛒 My Orders</button>
+                <button class="account-nav-btn">❤️ Wishlist</button>
+            </nav>
+            <div class="account-sidebar-footer">
+                <button id="logoutBtn" class="logout-btn">🚪 Sign Out</button>
+            </div>
+        </aside>
+
+        <main class="account-main">
+            <header class="account-header">
+                <h1>Welcome, <span id="userName">Reader</span>!</h1>
+                <p>Manage your account and explore your favorite books</p>
+            </header>
+
+            <div class="account-content">
+                <div class="account-card">
+                    <h3>Account Information</h3>
+                    <div class="account-info">
+                        <div class="info-row">
+                            <span class="info-label">Full Name:</span>
+                            <span class="info-value" id="accountName">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" id="accountEmail">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Member Since:</span>
+                            <span class="info-value" id="accountJoinDate">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="account-card">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions">
+                        <a href="index.html#books" class="action-btn">
+                            <span class="action-icon">📚</span>
+                            <span>Browse Books</span>
+                        </a>
+                        <a href="#" class="action-btn">
+                            <span class="action-icon">🛒</span>
+                            <span>My Orders</span>
+                        </a>
+                        <a href="#" class="action-btn">
+                            <span class="action-icon">❤️</span>
+                            <span>Wishlist</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="account-card">
+                    <h3>Featured Books</h3>
+                    <div id="featuredBooks" class="featured-books-grid">
+                        <p class="empty-message">No books available yet.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="account.js"></script>
+</body>
+</html>
