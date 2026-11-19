@@ -10,7 +10,7 @@
 
 ## 🌟 Overview
 
-**A-One Books** is a modern, elegant online bookstore built with pure HTML, CSS, and JavaScript. It features a stunning public-facing storefront and a fully functional admin dashboard for managing book inventory — all deployed automatically via Vercel.
+**A-One Books** is a modern, elegant online bookstore built with pure HTML, CSS, and JavaScript. It features a stunning public-facing storefront, customer authentication system, and a hidden admin dashboard for managing book inventory — all deployed automatically via Vercel.
 
 ## ✨ Features
 
@@ -23,8 +23,15 @@
 - **Newsletter Subscription** form for the readers club
 - **Fully Responsive** design for mobile, tablet, and desktop
 
-### 🔐 Admin Dashboard
-- **Secure Login Portal** with credential validation
+### 🔐 Customer Authentication
+- **Sign Up Page** — New customers can create accounts with name, email, and password
+- **Sign In Page** — Registered customers can log in to their accounts
+- **Account Dashboard** — Personalized page showing account info and featured books
+- **Session Management** — Users stay logged in until they sign out
+- **Secure Logout** — One-click sign out functionality
+
+### 🛠️ Admin Dashboard (Hidden)
+- **Secure Login Portal** with credential validation (accessible only via direct URL)
 - **Book Management** — add new books with title, price, and cover image
 - **Live Image Preview** before uploading
 - **Delete Functionality** — remove books from inventory with confirmation
