@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - A-One</title>
+    <title>Admin Dashboard - A-One Books</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="dashboard-container">
         <aside class="sidebar">
-            <h2>A-One Admin</h2>
+            <h2>A-One Books Admin</h2>
             <nav>
-                <button class="nav-btn active">📦 Manage Inventory</button>
+                <button class="nav-btn active">📚 Manage Inventory</button>
             </nav>
             <div class="sidebar-footer">
                 <button id="logoutBtn" class="logout-btn">🚪 Logout</button>
@@ -20,27 +20,27 @@
 
         <main class="main-content">
             <header>
-                <h1>Manage Inventory</h1>
-                <p>Upload new products or remove existing items</p>
+                <h1>Manage Book Inventory</h1>
+                <p>Upload new books or remove existing titles</p>
             </header>
 
             <div class="dashboard-grid">
                 <!-- Upload Form -->
                 <div class="card">
-                    <h3>Add New Product</h3>
+                    <h3>Add New Book</h3>
                     <form id="productForm">
                         <div class="form-group">
-                            <label for="productName">Product Name</label>
-                            <input type="text" id="productName" placeholder="e.g., Scandal Fragrance" required>
+                            <label for="productName">Book Title</label>
+                            <input type="text" id="productName" placeholder="e.g., The Great Gatsby" required>
                         </div>
 
                         <div class="form-group">
                             <label for="productPrice">Price</label>
-                            <input type="text" id="productPrice" placeholder="e.g., $50.00" required>
+                            <input type="text" id="productPrice" placeholder="e.g., $25.00" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="productImage">Product Image</label>
+                            <label for="productImage">Book Cover Image</label>
                             <input type="file" id="productImage" accept="image/*" required>
                             <div id="imagePreview" class="image-preview" style="display: none;"></div>
                         </div>
@@ -53,7 +53,7 @@
                 <div class="card">
                     <h3>Current Inventory (<span id="inventoryCount">0</span>)</h3>
                     <div id="inventoryList" class="inventory-list">
-                        <p class="empty-message">No items added yet.</p>
+                        <p class="empty-message">No books added yet.</p>
                     </div>
                 </div>
             </div>
