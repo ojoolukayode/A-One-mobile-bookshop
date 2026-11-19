@@ -3,7 +3,13 @@ if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
     window.location.href = 'admin.html';
 }
 
-let inventory = JSON.parse(localStorage.getItem('siteInventory') || '[]');
+// Supabase configuration (REPLACE THE VALUES BELOW WITH YOUR ACTUAL CREDENTIALS)
+const SUPABASE_URL = 'https://ecgtetaqpyvpjekkoihk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjZ3RldGFxcHl2cGpla2tvaWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxMDIzMDQsImV4cCI6MjExMDY3ODMwNH0.XkVrPYYpk4cWgqYCyNGdCMjP3CTSARyg-x7dTyxkkug';
+
+// Initialize Supabase client
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 let imagePreview = '';
 
 // Load inventory on page load
@@ -25,7 +31,7 @@ document.getElementById('productImage').addEventListener('change', function(e) {
 });
 
 // Handle form submission
-document.getElementById('productForm').addEventListener('submit', function(e) {
+document.getElementById('productForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const name = document.getElementById('productName').value;
@@ -36,25 +42,25 @@ document.getElementById('productForm').addEventListener('submit', function(e) {
         return;
     }
     
-    const newItem = {
-        id: Date.now(),
-        name: name,
-        price: price,
-        image: imagePreview
-    };
+    // Insert book into Supabase
+    const { data, error } = await supabase
+        .from('books')
+        .insert([
+            { name: name, price: price, image: imagePreview }
+        ]);
     
-    inventory.push(newItem);
-    localStorage.setItem('siteInventory', JSON.stringify(inventory));
+    if (error) {
+        alert('Error adding book: ' + error.message);
+        return;
+    }
     
     // Reset form
     document.getElementById('productForm').reset();
     document.getElementById('imagePreview').style.display = 'none';
     imagePreview = '';
     
-    // Reload inventory display
-    loadInventory();
-    
     alert('Book added successfully!');
+    loadInventory();
 });
 
 // Handle logout
@@ -64,37 +70,48 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
 });
 
 // Delete product function
-function deleteProduct(productId) {
-    // Confirm deletion
+async function deleteProduct(productId) {
     if (!confirm('Are you sure you want to remove this book from inventory? This action cannot be undone.')) {
         return;
     }
     
-    // Remove from inventory array
-    inventory = inventory.filter(item => item.id !== productId);
+    const { error } = await supabase
+        .from('books')
+        .delete()
+        .eq('id', productId);
     
-    // Save to localStorage
-    localStorage.setItem('siteInventory', JSON.stringify(inventory));
-    
-    // Reload inventory display
-    loadInventory();
+    if (error) {
+        alert('Error removing book: ' + error.message);
+        return;
+    }
     
     alert('Book removed successfully!');
+    loadInventory();
 }
 
 // Load and display inventory
-function loadInventory() {
+async function loadInventory() {
     const inventoryList = document.getElementById('inventoryList');
     const inventoryCount = document.getElementById('inventoryCount');
     
-    inventoryCount.textContent = inventory.length;
+    const { data: books, error } = await supabase
+        .from('books')
+        .select('*')
+        .order('created_at', { ascending: false });
     
-    if (inventory.length === 0) {
+    if (error) {
+        inventoryList.innerHTML = '<p class="empty-message">Error loading books.</p>';
+        return;
+    }
+    
+    inventoryCount.textContent = books.length;
+    
+    if (books.length === 0) {
         inventoryList.innerHTML = '<p class="empty-message">No books added yet.</p>';
         return;
     }
     
-    inventoryList.innerHTML = inventory.map(item => `
+    inventoryList.innerHTML = books.map(item => `
         <div class="inventory-item">
             <img src="${item.image}" alt="${item.name}">
             <div class="inventory-item-info">
