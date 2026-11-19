@@ -32,7 +32,7 @@ document.getElementById('productForm').addEventListener('submit', function(e) {
     const price = document.getElementById('productPrice').value;
     
     if (!name || !price || !imagePreview) {
-        alert('Please fill all fields and upload an image.');
+        alert('Please fill all fields and upload a book cover image.');
         return;
     }
     
@@ -54,7 +54,7 @@ document.getElementById('productForm').addEventListener('submit', function(e) {
     // Reload inventory display
     loadInventory();
     
-    alert('Product added successfully!');
+    alert('Book added successfully!');
 });
 
 // Handle logout
@@ -66,7 +66,7 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
 // Delete product function
 function deleteProduct(productId) {
     // Confirm deletion
-    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+    if (!confirm('Are you sure you want to remove this book from inventory? This action cannot be undone.')) {
         return;
     }
     
@@ -79,7 +79,7 @@ function deleteProduct(productId) {
     // Reload inventory display
     loadInventory();
     
-    alert('Product deleted successfully!');
+    alert('Book removed successfully!');
 }
 
 // Load and display inventory
@@ -90,7 +90,7 @@ function loadInventory() {
     inventoryCount.textContent = inventory.length;
     
     if (inventory.length === 0) {
-        inventoryList.innerHTML = '<p class="empty-message">No items added yet.</p>';
+        inventoryList.innerHTML = '<p class="empty-message">No books added yet.</p>';
         return;
     }
     
@@ -101,8 +101,8 @@ function loadInventory() {
                 <h4>${item.name}</h4>
                 <p>${item.price}</p>
             </div>
-            <button class="delete-btn" onclick="deleteProduct(${item.id})" title="Delete this product">
-                🗑️ Delete
+            <button class="delete-btn" onclick="deleteProduct(${item.id})" title="Remove this book">
+                🗑️ Remove
             </button>
         </div>
     `).join('');
