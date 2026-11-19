@@ -63,6 +63,25 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
     window.location.href = 'admin.html';
 });
 
+// Delete product function
+function deleteProduct(productId) {
+    // Confirm deletion
+    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+        return;
+    }
+    
+    // Remove from inventory array
+    inventory = inventory.filter(item => item.id !== productId);
+    
+    // Save to localStorage
+    localStorage.setItem('siteInventory', JSON.stringify(inventory));
+    
+    // Reload inventory display
+    loadInventory();
+    
+    alert('Product deleted successfully!');
+}
+
 // Load and display inventory
 function loadInventory() {
     const inventoryList = document.getElementById('inventoryList');
@@ -82,6 +101,9 @@ function loadInventory() {
                 <h4>${item.name}</h4>
                 <p>${item.price}</p>
             </div>
+            <button class="delete-btn" onclick="deleteProduct(${item.id})" title="Delete this product">
+                🗑️ Delete
+            </button>
         </div>
     `).join('');
 }
