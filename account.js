@@ -4,12 +4,12 @@ if (!currentUser) {
     window.location.href = 'signin.html';
 }
 
-// Supabase configuration (REPLACE THE VALUES BELOW WITH YOUR ACTUAL CREDENTIALS)
+// Supabase configuration (REPLACE WITH YOUR ACTUAL CREDENTIALS)
 const SUPABASE_URL = 'https://ecgtetaqpyvpjekkoihk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjZ3RldGFxcHl2cGpla2tvaWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxMDIzMDQsImV4cCI6MjExMDY3ODMwNH0.XkVrPYYpk4cWgqYCyNGdCMjP3CTSARyg-x7dTyxkkug';
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Display user information
 document.getElementById('userName').textContent = currentUser.fullName.split(' ')[0];
@@ -27,7 +27,7 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
 async function loadFeaturedBooks() {
     const featuredBooks = document.getElementById('featuredBooks');
     
-    const { data: books, error } = await supabase
+    const { data: books, error } = await supabaseClient
         .from('books')
         .select('*')
         .order('created_at', { ascending: false })
