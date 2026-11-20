@@ -4,11 +4,11 @@ if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
 }
 
 // Supabase configuration (REPLACE WITH YOUR ACTUAL CREDENTIALS)
-const SUPABASE_URL = 'https://ecgtetaqpyvpjekkoihk.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjZ3RldGFxcHl2cGpla2tvaWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxMDIzMDQsImV4cCI6MjExMDY3ODMwNH0.XkVrPYYpk4cWgqYCyNGdCMjP3CTSARyg-x7dTyxkkug';
+const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_URL_HERE';
+const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let imagePreview = '';
 
@@ -51,7 +51,7 @@ document.getElementById('productForm').addEventListener('submit', async function
     console.log('Attempting to insert book:', { name, price });
     
     // Insert book into Supabase
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('books')
         .insert([
             { name: name, price: price, image: imagePreview }
@@ -89,7 +89,7 @@ async function deleteProduct(productId) {
     
     console.log('Attempting to delete book with ID:', productId);
     
-    const { error } = await supabase
+    const { error } = await supabaseClient
         .from('books')
         .delete()
         .eq('id', productId);
@@ -112,7 +112,7 @@ async function loadInventory() {
     
     console.log('Loading inventory from Supabase...');
     
-    const { data: books, error } = await supabase
+    const { data: books, error } = await supabaseClient
         .from('books')
         .select('*')
         .order('created_at', { ascending: false });
