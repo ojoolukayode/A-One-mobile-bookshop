@@ -240,7 +240,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjZ3RldGFxcHl2cGpla2tvaWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxMDIzMDQsImV4cCI6MjExMDY3ODMwNH0.XkVrPYYpk4cWgqYCyNGdCMjP3CTSARyg-x7dTyxkkug';
 
     // Initialize Supabase client
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Load and display inventory from Supabase
     async function loadInventory() {
@@ -248,7 +248,7 @@
         
         console.log('Loading books from Supabase...');
         
-        const { data: books, error } = await supabase
+        const { data: books, error } = await supabaseClient
             .from('books')
             .select('*')
             .order('created_at', { ascending: false });
@@ -302,6 +302,6 @@
 
     // Load inventory when page loads
     loadInventory();
-    </script>
+</script>
 </body>
 </html>
