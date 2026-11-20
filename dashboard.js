@@ -3,7 +3,7 @@ if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
     window.location.href = 'admin.html';
 }
 
-// Supabase configuration (REPLACE THE VALUES BELOW WITH YOUR ACTUAL CREDENTIALS)
+// Supabase configuration (REPLACE WITH YOUR ACTUAL CREDENTIALS)
 const SUPABASE_URL = 'https://ecgtetaqpyvpjekkoihk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjZ3RldGFxcHl2cGpla2tvaWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxMDIzMDQsImV4cCI6MjExMDY3ODMwNH0.XkVrPYYpk4cWgqYCyNGdCMjP3CTSARyg-x7dTyxkkug';
 
@@ -19,6 +19,12 @@ window.addEventListener('load', loadInventory);
 document.getElementById('productImage').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
+        // Check file size (max 5MB for base64)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image is too large. Please use an image smaller than 5MB.');
+            return;
+        }
+        
         const reader = new FileReader();
         reader.onloadend = function() {
             imagePreview = reader.result;
@@ -42,17 +48,23 @@ document.getElementById('productForm').addEventListener('submit', async function
         return;
     }
     
+    console.log('Attempting to insert book:', { name, price });
+    
     // Insert book into Supabase
     const { data, error } = await supabase
         .from('books')
         .insert([
             { name: name, price: price, image: imagePreview }
-        ]);
+        ])
+        .select();
     
     if (error) {
+        console.error('Error inserting book:', error);
         alert('Error adding book: ' + error.message);
         return;
     }
+    
+    console.log('Book inserted successfully:', data);
     
     // Reset form
     document.getElementById('productForm').reset();
@@ -75,16 +87,20 @@ async function deleteProduct(productId) {
         return;
     }
     
+    console.log('Attempting to delete book with ID:', productId);
+    
     const { error } = await supabase
         .from('books')
         .delete()
         .eq('id', productId);
     
     if (error) {
+        console.error('Error deleting book:', error);
         alert('Error removing book: ' + error.message);
         return;
     }
     
+    console.log('Book deleted successfully');
     alert('Book removed successfully!');
     loadInventory();
 }
@@ -94,15 +110,20 @@ async function loadInventory() {
     const inventoryList = document.getElementById('inventoryList');
     const inventoryCount = document.getElementById('inventoryCount');
     
+    console.log('Loading inventory from Supabase...');
+    
     const { data: books, error } = await supabase
         .from('books')
         .select('*')
         .order('created_at', { ascending: false });
     
     if (error) {
-        inventoryList.innerHTML = '<p class="empty-message">Error loading books.</p>';
+        console.error('Error loading books:', error);
+        inventoryList.innerHTML = '<p class="empty-message">Error loading books: ' + error.message + '</p>';
         return;
     }
+    
+    console.log('Books loaded:', books);
     
     inventoryCount.textContent = books.length;
     
